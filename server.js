@@ -15,38 +15,50 @@ server.listen(3000, () => {
 
 app.use(express.static(path.join(process.cwd(), 'public')));
 
-let connectedUsers = [];
+let connectedUsers = {};
 
 io.on('connection', (socket) => {
     console.log("Conexão detectada...");
 
-    socket.on('join-request', (username) => {
-        socket.username = username;
-        connectedUsers.push(username);
+    socket.on('join-request', (data) => {
+        const { username, room } = data;
 
-        socket.emit('user-ok', connectedUsers);
-        socket.broadcast.emit('list-update', {
+        socket.username = username;
+        socket.room = room;
+
+        socket.join(room);
+
+        if (!connectedUsers[room]) {
+            connectedUsers[room] = [];
+        }
+        connectedUsers[room].push(username);
+
+        socket.emit('user-ok', connectedUsers[room]);
+        socket.broadcast.to(room).emit('list-update', {
             joined: username,
-            list: connectedUsers
+            list: connectedUsers[room]
         });
+    });
+
+    socket.on('send-msg', (data) => {
+        const { room, message } = data;
+        let obj = {
+            username: socket.username,
+            message: message
+        };
+
+        socket.broadcast.to(room).emit('show-msg', obj);
     });
 
     socket.on('disconnect', () => {
-        connectedUsers = connectedUsers.filter(u => u != socket.username);
+        const room = socket.room;
+        if (connectedUsers[room]) {
+            connectedUsers[room] = connectedUsers[room].filter(u => u !== socket.username);
+            socket.broadcast.to(room).emit('list-update', {
+                left: socket.username,
+                list: connectedUsers[room]
+            });
+        }
         console.log(connectedUsers);
-
-        socket.broadcast.emit('list-update', {
-            left: socket.username,
-            list: connectedUsers
-        });
-    });
-
-    socket.on('send-msg', (txt) => {
-        let obj = {
-            username: socket.username,
-            message: txt
-        };
-
-        socket.broadcast.emit('show-msg', obj);
     });
 });

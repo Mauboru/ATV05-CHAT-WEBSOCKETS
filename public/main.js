@@ -2,12 +2,14 @@ const socket = io();
 
 let username = '';
 let userList = [];
+let room = '';
 
 let loginPage = document.querySelector('#loginPage');
 let chatPage = document.querySelector('#chatPage');
 let loginInput = document.querySelector('#loginNameInput');
 let textInput = document.querySelector('#chatTextInput');
 let logoutBtn = document.querySelector('#logoutBtn');
+let roomSelect = document.querySelector('#roomSelect');
 
 loginPage.style.display = 'flex';
 chatPage.style.display = 'none';
@@ -42,11 +44,12 @@ function addMessage(type, user, msg) {
 loginInput.addEventListener('keyup', (e) => {
     if (e.keyCode === 13) {
         let name = loginInput.value.trim();
+        room = roomSelect.value;
         
         if (name != '') {
             username = name;
             document.title = 'Chat (' + username + ')';
-            socket.emit('join-request', username);
+            socket.emit('join-request', { username, room });
         }
     }
 });
@@ -58,7 +61,7 @@ textInput.addEventListener('keyup', (e) => {
 
         if (txt != '') {
             addMessage('msg', username, txt);
-            socket.emit('send-msg', txt);
+            socket.emit('send-msg', { room, message: txt }); // Envia a mensagem para o backend
         }
     }
 });
@@ -101,7 +104,7 @@ socket.on('reconnect', () => {
     addMessage('status', null, 'Reconectado!');
     
     if (username != '') {
-        socket.emit('join-request', username);
+        socket.emit('join-request', { username, room });
     }
 });
 
