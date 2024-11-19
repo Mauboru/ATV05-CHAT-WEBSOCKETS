@@ -5,8 +5,9 @@ let userList = [];
 
 let loginPage = document.querySelector('#loginPage');
 let chatPage = document.querySelector('#chatPage');
-let loginInput = document.querySelector('#loginInput');
-let textInput = document.querySelector('#textInput');
+let loginInput = document.querySelector('#loginNameInput');
+let textInput = document.querySelector('#chatTextInput');
+let logoutBtn = document.querySelector('#logoutBtn');
 
 loginPage.style.display = 'flex';
 chatPage.style.display = 'none';
@@ -29,9 +30,9 @@ function addMessage(type, user, msg) {
             break;
         case 'msg':
             if (username == user) {
-                ul.innerHTML += '<li class="m-txt"><span class="me>' + user + '</span>' + msg + '</li>';
+                ul.innerHTML += '<li class="m-txt"><span class="me">' + user + '</span>: ' + msg + '</li>';
             } else {
-                ul.innerHTML += '<li class="m-txt"><span>' + user + '</span>' + msg + '</li>';
+                ul.innerHTML += '<li class="m-txt"><span>' + user + '</span>: ' + msg + '</li>';
             }
             break;
     }
@@ -39,10 +40,10 @@ function addMessage(type, user, msg) {
 }
 
 loginInput.addEventListener('keyup', (e) => {
-    if (e.keyCode === 13){
-        let name = loginInput.ariaValueMax.trim();
+    if (e.keyCode === 13) {
+        let name = loginInput.value.trim();
         
-        if(name != ''){
+        if (name != '') {
             username = name;
             document.title = 'Chat (' + username + ')';
             socket.emit('join-request', username);
@@ -55,7 +56,7 @@ textInput.addEventListener('keyup', (e) => {
         let txt = textInput.value.trim();
         textInput.value = '';
 
-        if (txt != ''){
+        if (txt != '') {
             addMessage('msg', username, txt);
             socket.emit('send-msg', txt);
         }
@@ -98,8 +99,15 @@ socket.on('reconnect_error', () => {
 
 socket.on('reconnect', () => {
     addMessage('status', null, 'Reconectado!');
-
+    
     if (username != '') {
         socket.emit('join-request', username);
     }
+});
+
+logoutBtn.addEventListener('click', () => {
+    socket.disconnect();
+    username = '';
+    loginPage.style.display = 'flex';
+    chatPage.style.display = 'none';
 });

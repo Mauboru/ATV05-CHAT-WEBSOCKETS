@@ -1,24 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    
+
+    <!-- Página de Login -->
     <div class="page" id="loginPage">
-        <h1>Qual seu nome?</h1>
-        <input type="text" id="loginNameInput" />
+        <div class="login-container">
+            <h1>Qual seu nome?</h1>
+            <input type="text" id="loginNameInput" placeholder="Digite seu nome..." />
+            <button id="startChatBtn">Entrar no Chat</button>
+        </div>
     </div>
 
-    <div class="page" id="chatPage">
-        <div class="chatArea">
-            <ul class="chatList"></ul>
-            <ul class="userList"></ul>
-        </div>
-        <div class="chatInput">
-            <input type="text" id="chatTextInput" placeholder="Digite uma mensagem (e aperte ENTER)" />
+    <!-- Página de Chat -->
+    <div class="page" id="chatPage" style="display: none;">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>Bem-vindo, <span id="usernameDisplay"></span>!</h2>
+                <button id="logoutBtn">Sair</button>
+            </div>
+            <div class="chat-area">
+                <ul class="chatList"></ul>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatTextInput" placeholder="Digite uma mensagem e aperte ENTER" />
+            </div>
+            <div class="user-list">
+                <h3>Usuários Online</h3>
+                <ul class="userList"></ul>
+            </div>
         </div>
     </div>
 

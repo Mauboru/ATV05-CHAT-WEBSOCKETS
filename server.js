@@ -23,7 +23,6 @@ io.on('connection', (socket) => {
     socket.on('join-request', (username) => {
         socket.username = username;
         connectedUsers.push(username);
-        console.log(connectedUsers);
 
         socket.emit('user-ok', connectedUsers);
         socket.broadcast.emit('list-update', {

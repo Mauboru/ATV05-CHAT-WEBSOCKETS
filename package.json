@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chatnode": "file:",
     "express": "^4.17.1",
     "socket.io": "^2.5.1"
   },
